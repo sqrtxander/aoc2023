@@ -12,20 +12,18 @@ INPUT_TXT = os.path.join(os.path.dirname(__file__), 'input.in')
 
 def solve(s: str) -> int:
     rocks = s.splitlines()
-    slidden_rocks = []
+    new_rocks = []
     for col in zip(*rocks):
         col_s = ''.join(col)
-        prev = ''
-        while prev != col_s:
-            prev = col_s
+        while '.O' in col_s:
             col_s = col_s.replace('.O', 'O.')
-        slidden_rocks.append(col_s)
+        new_rocks.append(tuple(col_s))
 
-    slidden_rocks = list(zip(*slidden_rocks))
+    new_rocks = tuple(zip(*new_rocks))
 
     total = 0
-    i = len(slidden_rocks)
-    for row in slidden_rocks:
+    i = len(new_rocks)
+    for row in new_rocks:
         total += i * row.count('O')
         i -= 1
     return total
