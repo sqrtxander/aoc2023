@@ -7,27 +7,23 @@ import pytest
 
 import support
 
-from collections import defaultdict
 from functools import cache
 INPUT_TXT = os.path.join(os.path.dirname(__file__), 'input.in')
 
 
 def solve(s: str) -> int:
     rocks = tuple(tuple(l) for l in s.splitlines())
-    scores_times = defaultdict(list)
-    tolerance = 5
-    for i in range(1000000000):
+    grid_times = {}
+    cycles = 1000000000
+    i = 0
+    while i < cycles:
         rocks = cycle(rocks)
-
-        sc = score(rocks)
-        scores_times[sc].append(i)
-        st = scores_times[sc]
-        if len(st) >= tolerance:
-            if is_linear(st[-tolerance:]):
-                diff = st[-1] - st[-2]
-                if st[-1] % diff == 999999999 % diff:
-                    return sc
-    return 0
+        if rocks in grid_times:
+            diff = i - grid_times[rocks]
+            i += (cycles - i) // diff * diff
+        grid_times[rocks] = i
+        i += 1
+    return score(rocks)
 
 
 @cache
@@ -60,19 +56,6 @@ def score(rocks: tuple[tuple[str, ...], ...]) -> int:
         total += i * row.count('O')
         i -= 1
     return total
-
-
-def is_linear(lst: list[int]) -> bool:
-    diff = lst[1] - lst[0]
-    for a, b in zip(lst, lst[1:]):
-        if b - a != diff:
-            return False
-    return True
-
-
-def pp(rocks):
-    for row in rocks:
-        print(''.join(row))
 
 
 INPUT_S = '''\
